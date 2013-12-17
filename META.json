@@ -1,5 +1,5 @@
 {
-   "abstract" : "The great new WWW::HarWalk!",
+   "abstract" : "Replay HTTP requests from HAR ( HTTP Archive ) file",
    "author" : [
       "Achilles Xu <xudaye@cpan.org>"
    ],
@@ -37,5 +37,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "0.01"
+   "version" : "0.10"
 }

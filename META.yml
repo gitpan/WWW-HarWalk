@@ -1,5 +1,5 @@
 ---
-abstract: 'The great new WWW::HarWalk!'
+abstract: 'Replay HTTP requests from HAR ( HTTP Archive ) file'
 author:
   - 'Achilles Xu <xudaye@cpan.org>'
 build_requires:
@@ -19,4 +19,4 @@ no_index:
     - inc
 requires:
   perl: 5.006
-version: 0.01
+version: 0.10
