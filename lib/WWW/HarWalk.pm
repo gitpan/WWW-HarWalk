@@ -14,11 +14,11 @@ WWW::HarWalk - Replay HTTP requests from HAR ( HTTP Archive ) file
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 our @EXPORT_OK = qw(walk_har);
 
@@ -28,18 +28,31 @@ our @EXPORT_OK = qw(walk_har);
     use WWW::HarWalk qw(walk_har);
     
     my $ua = LWP::UserAgent->new;
+
+    # simple usage
+    walk_har($ua, 'c.lietou.com.har');
     
+    # with hooks
     walk_har($ua,                 # a LWP::UserAgent instance
          'c.lietou.com.har',      # har file path
          sub {
              my $entry = shift;   # entries item in har
-             my $request = $entry->{request};     # request of the entry item. Note: this is not the HTTP::Request instance
-             return 0 if $request->{url} =~ /\.(?:gif|png|css|js)(?:\?.*)?$/;    # return false to skip this entry
-             return 1;                                                           # return true to request this entry
+             
+             # request of the entry item. Note: this is not the HTTP::Request instance
+             my $request = $entry->{request};
+             
+             # return false to skip this entry
+             return 0 if $request->{url} =~ /\.(?:gif|png|css|js)(?:\?.*)?$/;
+             
+             # must return true to request this entry
+             return 1;
          },
          sub {
-             my ($entry, $res, $entries) = @_;       # $res is a HTTP::Response intance
-             if ($entry->{request}->{url} =~ /refreshresume/) {    # you can print or capture something from some response
+             # $res is a HTTP::Response intance, decoded
+             my ($entry, $res, $entries) = @_;
+             
+             # you can print or capture something from some response
+             if ($entry->{request}->{url} =~ /refreshresume/) {
                  print $res->content, "\n";
              }
          });
@@ -52,6 +65,24 @@ walk_har
 
 =head2 walk_har($ua, $har_file, $before_sub, $after_sub)
 
+Walk through all the entries in the HAR file, and issue each request.
+
+The first two arguments is required. The $ua is a LWP::UserAgent instance, you can do some configuration first, eg: set timeout. $har_file is the HAR file you recorded.
+
+The last two arguments are for hooks. In the before hook you can decide where this request shall be sent, you can return false to skip some unnessary request, such as images, css, etc. The prototype of the before hook is:
+
+    sub {
+        my ($entry) = @_;
+        return 1;
+    }
+
+The after hook is for people to get some information from the response. Eg: get some link to download and push them into @$entries. It is prototype is :
+
+    sub {
+        my ($entry, $res, $entries) = @_;
+    }
+
+The $entry is the item in the entries array in the HAR file ( log -> entries ). The $res is a decoded HTTP::Response instance.
 
 =cut
 
@@ -83,6 +114,7 @@ sub walk_har {
             $req->content($request->{postData}->{text});
         }
         my $res = $ua->request($req);
+        $res->decode;
         if ($after_sub && ref $after_sub eq 'CODE') {
             $after_sub->($entry, $res, $o->{log}->{entries});
         }
@@ -100,8 +132,9 @@ Please report any bugs or feature requests to C<bug-www-harwalk at rt.cpan.org>,
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WWW-HarWalk>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
+=head1 SEE ALSO
 
-
+HAR Specifiction: L<http://www.softwareishard.com/blog/har-12-spec/>
 
 =head1 SUPPORT
 
