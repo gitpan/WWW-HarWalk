@@ -1,5 +1,7 @@
 Revision history for WWW-HarWalk
 
+0.12    Add postdata modification example to SYNOPSIS
+
 0.11    Auto decode response for after hook
         Add more document
 

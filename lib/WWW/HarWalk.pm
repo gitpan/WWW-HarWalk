@@ -14,11 +14,11 @@ WWW::HarWalk - Replay HTTP requests from HAR ( HTTP Archive ) file
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 our @EXPORT_OK = qw(walk_har);
 
@@ -43,6 +43,11 @@ our @EXPORT_OK = qw(walk_har);
              
              # return false to skip this entry
              return 0 if $request->{url} =~ /\.(?:gif|png|css|js)(?:\?.*)?$/;
+             
+             # modify post params
+             if ($request->{url} =~ /login.php/) {
+                 $request->{postData}->{text} =~ s/username=\w+/username=Tom/;
+             }
              
              # must return true to request this entry
              return 1;
@@ -69,7 +74,7 @@ Walk through all the entries in the HAR file, and issue each request.
 
 The first two arguments is required. The $ua is a LWP::UserAgent instance, you can do some configuration first, eg: set timeout. $har_file is the HAR file you recorded.
 
-The last two arguments are for hooks. In the before hook you can decide where this request shall be sent, you can return false to skip some unnessary request, such as images, css, etc. The prototype of the before hook is:
+The last two arguments are for hooks. In the before hook you can decide wheather this request shall be sent, you can return false to skip some unnessary request, such as images, css, etc. You can modify the $entry here. Eg: you can change the username and password in the postData to replay twitter requests with another user. The prototype of the before hook is:
 
     sub {
         my ($entry) = @_;
