@@ -18,6 +18,10 @@ WriteMakefile(
         'Test::More' => 0,
     },
     PREREQ_PM => {
+        'JSON' => 0,
+        'HTTP::Request' => 0,
+        'Carp' => 0,
+        'Exporter' => 0,
         #'ABC'              => 1.6,
         #'Foo::Bar::Module' => 5.0401,
     },

@@ -18,5 +18,9 @@ no_index:
     - t
     - inc
 requires:
+  Carp: 0
+  Exporter: 0
+  HTTP::Request: 0
+  JSON: 0
   perl: 5.006
-version: 0.12
+version: 0.13
